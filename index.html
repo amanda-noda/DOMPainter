@@ -16,7 +16,14 @@
     <header class="header">
       <div class="header-content">
         <h1 class="logo">
-          <span class="logo-icon">◆</span>
+          <span class="logo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="6" height="6" rx="1"/>
+              <rect x="15" y="3" width="6" height="6" rx="1"/>
+              <rect x="3" y="15" width="6" height="6" rx="1"/>
+              <rect x="15" y="15" width="6" height="6" rx="1"/>
+            </svg>
+          </span>
           DOMPainter
         </h1>
         <p class="subtitle">Transforme imagens em tempo real</p>
@@ -33,12 +40,24 @@
         <div class="sidebar-inner">
           <section class="panel panel-upload">
             <h2 class="panel-title">
-              <span class="panel-icon">↑</span>
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </span>
               Carregar
             </h2>
             <div class="upload-zone" id="uploadZone" tabindex="0">
               <div class="upload-glow"></div>
-              <span class="upload-icon">◇</span>
+              <span class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </span>
               <span class="upload-text">Arraste ou clique</span>
               <input type="file" id="fileInput" accept="image/*" hidden>
             </div>
@@ -49,7 +68,19 @@
 
           <section class="panel panel-filters">
             <h2 class="panel-title">
-              <span class="panel-icon">◐</span>
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14"/>
+                  <line x1="4" y1="10" x2="4" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12" y2="3"/>
+                  <line x1="20" y1="21" x2="20" y2="16"/>
+                  <line x1="20" y1="12" x2="20" y2="3"/>
+                  <line x1="1" y1="14" x2="7" y2="14"/>
+                  <line x1="9" y1="8" x2="15" y2="8"/>
+                  <line x1="17" y1="16" x2="23" y2="16"/>
+                </svg>
+              </span>
               Filtros
             </h2>
             <div class="controls" id="filterControls"></div>
@@ -57,7 +88,14 @@
 
           <section class="panel panel-modes">
             <h2 class="panel-title">
-              <span class="panel-icon">⊞</span>
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+              </span>
               Modo
             </h2>
             <div class="mode-buttons" id="modeButtons">
@@ -66,6 +104,132 @@
               </button>
               <button type="button" class="mode-btn" data-mode="mosaic">
                 <span class="mode-label">Mosaico</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel panel-mosaic-size">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"/>
+                  <path d="M3 12h12"/>
+                  <path d="M3 18h6"/>
+                  <path d="M18 6v12"/>
+                  <path d="M15 9l3-3 3 3"/>
+                </svg>
+              </span>
+              Resolução
+            </h2>
+            <div class="size-buttons" id="sizeButtons">
+              <button type="button" class="size-btn" data-size="16">16×16</button>
+              <button type="button" class="size-btn" data-size="32">32×32</button>
+              <button type="button" class="size-btn active" data-size="40">40×40</button>
+              <button type="button" class="size-btn" data-size="64">64×64</button>
+              <button type="button" class="size-btn" data-size="128">128×128</button>
+            </div>
+          </section>
+
+          <section class="panel panel-tools">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                </svg>
+              </span>
+              Ferramentas
+            </h2>
+            <div class="tool-buttons" id="toolButtons">
+              <button type="button" class="tool-btn active" data-tool="paint" title="Pintar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+              </button>
+              <button type="button" class="tool-btn" data-tool="eraser" title="Apagar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16a2 2 0 0 1 0-2.83L13 3a2 2 0 0 1 2.83 0l4 4a2 2 0 0 1 0 2.83L12 20"/></svg>
+              </button>
+              <button type="button" class="tool-btn" data-tool="eyedropper" title="Conta-gotas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel panel-color">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
+                  <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+              </span>
+              Cor
+            </h2>
+            <div class="color-picker-row">
+              <input type="color" id="colorPicker" value="#7c3aed">
+              <span class="color-hex" id="colorHex">#7c3aed</span>
+            </div>
+          </section>
+
+          <section class="panel panel-quantize">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="6" height="6"/>
+                  <rect x="15" y="3" width="6" height="6"/>
+                  <rect x="3" y="15" width="6" height="6"/>
+                  <rect x="15" y="15" width="6" height="6"/>
+                </svg>
+              </span>
+              Redução de cores
+            </h2>
+            <div class="quantize-buttons" id="quantizeButtons">
+              <button type="button" class="quantize-btn" data-colors="2">2</button>
+              <button type="button" class="quantize-btn" data-colors="4">4</button>
+              <button type="button" class="quantize-btn" data-colors="8">8</button>
+              <button type="button" class="quantize-btn" data-colors="16">16</button>
+            </div>
+          </section>
+
+          <section class="panel panel-dither">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h4v4H4z"/>
+                  <path d="M16 4h4v4h-4z"/>
+                  <path d="M4 16h4v4H4z"/>
+                  <path d="M16 16h4v4h-4z"/>
+                  <path d="M10 10h4v4h-4z"/>
+                </svg>
+              </span>
+              Dithering
+            </h2>
+            <div class="dither-buttons" id="ditherButtons">
+              <button type="button" class="dither-btn" data-dither="floyd">Floyd-Steinberg</button>
+              <button type="button" class="dither-btn" data-dither="ordered">Ordered</button>
+            </div>
+          </section>
+
+          <section class="panel panel-export">
+            <h2 class="panel-title">
+              <span class="panel-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </span>
+              Exportar
+            </h2>
+            <div class="export-buttons" id="exportButtons">
+              <button type="button" class="btn btn-export" id="exportPng">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PNG
+              </button>
+              <button type="button" class="btn btn-export" id="exportJson">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                JSON
               </button>
             </div>
           </section>
@@ -81,12 +245,26 @@
           <div class="canvas-container" id="canvasContainer">
             <div class="canvas-placeholder" id="canvasPlaceholder">
               <div class="placeholder-content">
-                <span class="placeholder-icon">◇</span>
+                <span class="placeholder-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                </span>
                 <p>Carregue uma imagem para começar</p>
               </div>
             </div>
             <canvas id="mainCanvas"></canvas>
-            <div class="mosaic-grid" id="mosaicGrid" aria-hidden="true"></div>
+            <div class="mosaic-viewport" id="mosaicViewport" aria-hidden="true">
+              <canvas id="pixelCanvas"></canvas>
+              <div class="mosaic-grid" id="mosaicGrid"></div>
+            </div>
+            <div class="pixel-tooltip" id="pixelTooltip">
+              <span class="tooltip-x">x: 0</span>
+              <span class="tooltip-y">y: 0</span>
+              <span class="tooltip-color">#000000</span>
+            </div>
           </div>
         </div>
         <div class="status-bar" id="statusBar">
@@ -95,6 +273,8 @@
             FPS: --
           </span>
           <span class="status-item" id="domCount">DOM: 0</span>
+          <span class="status-item status-hint" id="zoomHint">Scroll: zoom · Arrastar: mover</span>
+          <span class="status-item status-hint" id="undoHint">Ctrl+Z Desfazer · Ctrl+Y Refazer</span>
         </div>
       </section>
     </main>
