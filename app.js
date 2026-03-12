@@ -26,11 +26,15 @@ const $ = {
   modeButtons: null,
   resetBtn: null,
   canvasContainer: null,
+  canvasPlaceholder: null,
   mainCanvas: null,
   mosaicGrid: null,
   statusBar: null,
   fpsCounter: null,
   domCount: null,
+  sidebar: null,
+  sidebarToggle: null,
+  toast: null,
 };
 
 let state = {
@@ -73,7 +77,8 @@ const raf = window.requestAnimationFrame || window.setTimeout;
 function cacheElements() {
   const ids = [
     'uploadZone', 'fileInput', 'filterControls', 'modeButtons', 'resetBtn',
-    'canvasContainer', 'mainCanvas', 'mosaicGrid', 'statusBar', 'fpsCounter', 'domCount'
+    'canvasContainer', 'canvasPlaceholder', 'mainCanvas', 'mosaicGrid',
+    'statusBar', 'fpsCounter', 'domCount', 'sidebar', 'sidebarToggle', 'toast'
   ];
   ids.forEach(id => {
     $[id] = document.getElementById(id);
@@ -149,7 +154,10 @@ function setupEventDelegation() {
     }
   });
 
-  $.resetBtn.addEventListener('click', resetFilters);
+  $.resetBtn.addEventListener('click', () => {
+    resetFilters();
+    showToast('Filtros resetados');
+  });
 }
 
 function setupUpload() {
@@ -161,6 +169,7 @@ function setupUpload() {
     sampleBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       loadSampleImage();
+      showToast('Imagem de exemplo carregada');
     });
   }
 
@@ -173,7 +182,43 @@ function setupUpload() {
     e.preventDefault();
     $.uploadZone.classList.remove('dragover');
     handleFile(e.dataTransfer.files[0]);
+    showToast('Imagem carregada');
   });
+}
+
+function setupRipple() {
+  document.querySelectorAll('.btn, .mode-btn').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      const rect = this.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      this.style.setProperty('--x', `${x}%`);
+      this.style.setProperty('--y', `${y}%`);
+    });
+  });
+}
+
+function setupSidebarToggle() {
+  if (!$.sidebarToggle || !$.sidebar) return;
+  $.sidebarToggle.addEventListener('click', () => {
+    $.sidebar.classList.toggle('collapsed');
+    $.sidebarToggle.classList.toggle('active', $.sidebar.classList.contains('collapsed'));
+  });
+}
+
+function showToast(message) {
+  if (!$.toast) return;
+  $.toast.textContent = message;
+  $.toast.classList.add('visible');
+  clearTimeout(window._toastTimeout);
+  window._toastTimeout = setTimeout(() => {
+    $.toast.classList.remove('visible');
+  }, 2500);
+}
+
+function updatePlaceholder() {
+  if (!$.canvasPlaceholder) return;
+  $.canvasPlaceholder.classList.toggle('hidden', !!state.image);
 }
 
 // ============ MANIPULAÇÃO DE IMAGEM ============
@@ -208,6 +253,7 @@ function loadSampleImage() {
   const img = new Image();
   img.onload = () => {
     state.image = img;
+    updatePlaceholder();
     drawCanvas();
     if (state.mode === 'mosaic') buildMosaic();
   };
@@ -220,6 +266,7 @@ function handleFile(file) {
   const img = new Image();
   img.onload = () => {
     state.image = img;
+    updatePlaceholder();
     drawCanvas();
     if (state.mode === 'mosaic') buildMosaic();
   };
@@ -371,7 +418,7 @@ function resetFilters() {
 function updateDomCount() {
   if (!$.domCount) return;
   const count = document.querySelectorAll('.mosaic-cell').length;
-  $.domCount.textContent = `Elementos DOM: ${count.toLocaleString()}`;
+  $.domCount.textContent = `DOM: ${count.toLocaleString()}`;
 }
 
 // ============ FPS COUNTER ============
@@ -410,7 +457,10 @@ function init() {
   createFilterControls();
   setupEventDelegation();
   setupUpload();
+  setupRipple();
+  setupSidebarToggle();
   initFpsCounter();
+  updatePlaceholder();
   window.addEventListener('resize', handleResize);
 
   // Valores iniciais dos filtros

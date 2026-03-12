@@ -4,56 +4,102 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DOMPainter - Manipulador de Imagens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app">
+    <div class="bg-gradient"></div>
+
     <header class="header">
-      <h1>DOMPainter</h1>
-      <p class="subtitle">Manipulação de imagens em tempo real com DOM avançado</p>
+      <div class="header-content">
+        <h1 class="logo">
+          <span class="logo-icon">◆</span>
+          DOMPainter
+        </h1>
+        <p class="subtitle">Transforme imagens em tempo real</p>
+      </div>
+      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Alternar painel">
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+      </button>
     </header>
 
     <main class="main">
-      <aside class="sidebar">
-        <section class="panel">
-          <h2>Carregar Imagem</h2>
-          <div class="upload-zone" id="uploadZone" tabindex="0">
-            <span class="upload-icon">📷</span>
-            <span>Arraste uma imagem ou clique para selecionar</span>
-            <input type="file" id="fileInput" accept="image/*" hidden>
-          </div>
-          <button type="button" class="btn-sample" id="sampleBtn">Usar imagem de exemplo</button>
-        </section>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+          <section class="panel panel-upload">
+            <h2 class="panel-title">
+              <span class="panel-icon">↑</span>
+              Carregar
+            </h2>
+            <div class="upload-zone" id="uploadZone" tabindex="0">
+              <div class="upload-glow"></div>
+              <span class="upload-icon">◇</span>
+              <span class="upload-text">Arraste ou clique</span>
+              <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+            <button type="button" class="btn btn-sample" id="sampleBtn">
+              <span>Usar exemplo</span>
+            </button>
+          </section>
 
-        <section class="panel">
-          <h2>Filtros em Tempo Real</h2>
-          <div class="controls" id="filterControls">
-            <!-- Controles gerados via DOM -->
-          </div>
-        </section>
+          <section class="panel panel-filters">
+            <h2 class="panel-title">
+              <span class="panel-icon">◐</span>
+              Filtros
+            </h2>
+            <div class="controls" id="filterControls"></div>
+          </section>
 
-        <section class="panel">
-          <h2>Modos de Visualização</h2>
-          <div class="mode-buttons" id="modeButtons">
-            <button type="button" class="mode-btn active" data-mode="canvas">Canvas</button>
-            <button type="button" class="mode-btn" data-mode="mosaic">Mosaico DOM</button>
-          </div>
-        </section>
+          <section class="panel panel-modes">
+            <h2 class="panel-title">
+              <span class="panel-icon">⊞</span>
+              Modo
+            </h2>
+            <div class="mode-buttons" id="modeButtons">
+              <button type="button" class="mode-btn active" data-mode="canvas">
+                <span class="mode-label">Canvas</span>
+              </button>
+              <button type="button" class="mode-btn" data-mode="mosaic">
+                <span class="mode-label">Mosaico</span>
+              </button>
+            </div>
+          </section>
 
-        <button type="button" class="btn-reset" id="resetBtn">Resetar Filtros</button>
+          <button type="button" class="btn btn-reset" id="resetBtn">
+            <span>Resetar</span>
+          </button>
+        </div>
       </aside>
 
       <section class="workspace">
-        <div class="canvas-container" id="canvasContainer">
-          <canvas id="mainCanvas"></canvas>
-          <div class="mosaic-grid" id="mosaicGrid" aria-hidden="true"></div>
+        <div class="canvas-wrapper">
+          <div class="canvas-container" id="canvasContainer">
+            <div class="canvas-placeholder" id="canvasPlaceholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">◇</span>
+                <p>Carregue uma imagem para começar</p>
+              </div>
+            </div>
+            <canvas id="mainCanvas"></canvas>
+            <div class="mosaic-grid" id="mosaicGrid" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="status-bar" id="statusBar">
-          <span id="fpsCounter">FPS: --</span>
-          <span id="domCount">Elementos DOM: 0</span>
+          <span class="status-item" id="fpsCounter">
+            <span class="status-dot"></span>
+            FPS: --
+          </span>
+          <span class="status-item" id="domCount">DOM: 0</span>
         </div>
       </section>
     </main>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
   </div>
 
   <script src="app.js"></script>
