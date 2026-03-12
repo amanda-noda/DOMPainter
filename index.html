@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOMPainter - Manipulador de Imagens</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>DOMPainter</h1>
+      <p class="subtitle">Manipulação de imagens em tempo real com DOM avançado</p>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <section class="panel">
+          <h2>Carregar Imagem</h2>
+          <div class="upload-zone" id="uploadZone" tabindex="0">
+            <span class="upload-icon">📷</span>
+            <span>Arraste uma imagem ou clique para selecionar</span>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+          </div>
+          <button type="button" class="btn-sample" id="sampleBtn">Usar imagem de exemplo</button>
+        </section>
+
+        <section class="panel">
+          <h2>Filtros em Tempo Real</h2>
+          <div class="controls" id="filterControls">
+            <!-- Controles gerados via DOM -->
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Modos de Visualização</h2>
+          <div class="mode-buttons" id="modeButtons">
+            <button type="button" class="mode-btn active" data-mode="canvas">Canvas</button>
+            <button type="button" class="mode-btn" data-mode="mosaic">Mosaico DOM</button>
+          </div>
+        </section>
+
+        <button type="button" class="btn-reset" id="resetBtn">Resetar Filtros</button>
+      </aside>
+
+      <section class="workspace">
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="mainCanvas"></canvas>
+          <div class="mosaic-grid" id="mosaicGrid" aria-hidden="true"></div>
+        </div>
+        <div class="status-bar" id="statusBar">
+          <span id="fpsCounter">FPS: --</span>
+          <span id="domCount">Elementos DOM: 0</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
