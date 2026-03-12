@@ -61,15 +61,33 @@ function throttle(fn, delay) {
   };
 }
 
+function debounce(fn, delay) {
+  let t;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
 const raf = window.requestAnimationFrame || window.setTimeout;
+
+// Cache de contexto e canvas reutilizáveis
+let _tempCanvas = null;
+let _tempCtx = null;
+let _mainCtx = null;
+let _pixelCtx = null;
 
 function rgbToHex(r, g, b) {
   return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
+const _hexCache = { hex: '', rgb: [0, 0, 0] };
 function hexToRgb(hex) {
+  if (_hexCache.hex === hex) return _hexCache.rgb;
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
+  _hexCache.hex = hex;
+  _hexCache.rgb = result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
+  return _hexCache.rgb;
 }
 
 // ============ CACHE E INICIALIZAÇÃO DOM ============
@@ -302,6 +320,7 @@ function getFilterCSS() {
 }
 
 let filterUpdateScheduled = false;
+let paintRenderScheduled = false;
 function scheduleFilterUpdate() {
   if (filterUpdateScheduled) return;
   filterUpdateScheduled = true;
@@ -314,7 +333,8 @@ function scheduleFilterUpdate() {
 
 function drawCanvas() {
   if (!state.image || !$.mainCanvas) return;
-  const ctx = $.mainCanvas.getContext('2d');
+  if (!_mainCtx) _mainCtx = $.mainCanvas.getContext('2d');
+  const ctx = _mainCtx;
   const maxW = $.canvasContainer.clientWidth;
   const maxH = $.canvasContainer.clientHeight;
   const scale = Math.min(maxW / state.image.width, maxH / state.image.height, 1);
@@ -327,19 +347,20 @@ function drawCanvas() {
   ctx.filter = 'none';
 }
 
-// ============ QUANTIZAÇÃO (k-means simplificado) ============
+// ============ QUANTIZAÇÃO (k-means simplificado, amostragem) ============
 function getPalette(data, numColors) {
+  const step = Math.max(1, Math.floor(data.length / (numColors * 500)));
   const pixels = [];
-  for (let i = 0; i < data.length; i += 4) {
+  for (let i = 0; i < data.length; i += step) {
     if (data[i + 3] > 128) pixels.push([data[i], data[i + 1], data[i + 2]]);
   }
   if (pixels.length === 0) return [[0, 0, 0]];
   const centroids = [];
   for (let i = 0; i < numColors; i++) {
-    const p = pixels[Math.floor(Math.random() * pixels.length)];
-    centroids.push([...p]);
+    centroids.push([...pixels[Math.floor(Math.random() * pixels.length)]]);
   }
-  for (let iter = 0; iter < 10; iter++) {
+  const maxIter = pixels.length > 10000 ? 5 : 10;
+  for (let iter = 0; iter < maxIter; iter++) {
     const clusters = centroids.map(() => []);
     for (const p of pixels) {
       let minD = Infinity, idx = 0;
@@ -451,10 +472,13 @@ function orderedDither(imageData, palette) {
 
 // ============ MOSAICO / PIXEL CANVAS ============
 function getPixelDataFromImage(ditherType) {
-  const temp = document.createElement('canvas');
-  temp.width = state.mosaicSize;
-  temp.height = state.mosaicSize;
-  const ctx = temp.getContext('2d');
+  if (!_tempCanvas) {
+    _tempCanvas = document.createElement('canvas');
+    _tempCtx = _tempCanvas.getContext('2d');
+  }
+  _tempCanvas.width = state.mosaicSize;
+  _tempCanvas.height = state.mosaicSize;
+  const ctx = _tempCtx;
   ctx.filter = getFilterCSS();
   ctx.drawImage(state.image, 0, 0, state.mosaicSize, state.mosaicSize);
   const imageData = ctx.getImageData(0, 0, state.mosaicSize, state.mosaicSize);
@@ -496,11 +520,13 @@ function buildMosaic(ditherType) {
 
 function renderPixelCanvas() {
   if (!state.pixelData || !$.pixelCanvas) return;
-  const { width, height, data } = state.pixelData;
-  $.pixelCanvas.width = width;
-  $.pixelCanvas.height = height;
-  const ctx = $.pixelCanvas.getContext('2d');
-  ctx.putImageData(state.pixelData, 0, 0);
+  const { width, height } = state.pixelData;
+  if ($.pixelCanvas.width !== width || $.pixelCanvas.height !== height) {
+    $.pixelCanvas.width = width;
+    $.pixelCanvas.height = height;
+  }
+  if (!_pixelCtx) _pixelCtx = $.pixelCanvas.getContext('2d');
+  _pixelCtx.putImageData(state.pixelData, 0, 0);
   const size = Math.min($.canvasContainer.clientWidth, $.canvasContainer.clientHeight, 512);
   const cellSize = size / width;
   $.pixelCanvas.style.width = `${width * cellSize}px`;
@@ -528,8 +554,12 @@ function getPixelAtScreen(x, y) {
   return { x: px, y: py, r: d[i], g: d[i + 1], b: d[i + 2], hex: rgbToHex(d[i], d[i + 1], d[i + 2]) };
 }
 
-function showPixelTooltip(x, y, info) {
+let _lastTooltipInfo = '';
+const showPixelTooltipThrottled = throttle((x, y, info) => {
   if (!$.pixelTooltip) return;
+  const key = info ? `${info.x},${info.y},${info.hex}` : '';
+  if (_lastTooltipInfo === key) return;
+  _lastTooltipInfo = key;
   if (!info) {
     $.pixelTooltip.classList.remove('visible');
     return;
@@ -540,6 +570,24 @@ function showPixelTooltip(x, y, info) {
   $.pixelTooltip.querySelector('.tooltip-y').textContent = `y: ${info.y}`;
   $.pixelTooltip.querySelector('.tooltip-color').textContent = info.hex;
   $.pixelTooltip.classList.add('visible');
+}, 32);
+
+function showPixelTooltip(x, y, info) {
+  if (!info && $.pixelTooltip) {
+    _lastTooltipInfo = '';
+    $.pixelTooltip.classList.remove('visible');
+    return;
+  }
+  showPixelTooltipThrottled(x, y, info);
+}
+
+function schedulePaintRender() {
+  if (paintRenderScheduled) return;
+  paintRenderScheduled = true;
+  raf(() => {
+    paintRenderScheduled = false;
+    renderPixelCanvas();
+  });
 }
 
 function setPixel(px, py, r, g, b, a = 255) {
@@ -636,10 +684,10 @@ function setupMosaicZoomPan() {
       if (state.tool === 'paint' && info) {
         const [r, g, b] = hexToRgb(state.paintColor);
         setPixel(info.x, info.y, r, g, b);
-        renderPixelCanvas();
+        schedulePaintRender();
       } else if (state.tool === 'eraser' && info) {
         setPixel(info.x, info.y, 0, 0, 0, 0);
-        renderPixelCanvas();
+        schedulePaintRender();
       }
     }
   });
@@ -652,6 +700,7 @@ function setupMosaicZoomPan() {
   });
 
   $.mosaicViewport.addEventListener('mouseleave', () => {
+    _lastTooltipInfo = '';
     $.pixelTooltip?.classList.remove('visible');
   });
 }

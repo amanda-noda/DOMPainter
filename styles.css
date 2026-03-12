@@ -585,6 +585,7 @@ body {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   pointer-events: auto;
+  will-change: transform;
 }
 
 /* ============ WORKSPACE ============ */
@@ -616,6 +617,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  contain: layout paint;
 }
 
 .canvas-placeholder {
